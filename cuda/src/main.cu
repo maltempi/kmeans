@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     cudaSetDevice(0);
 
     // 100.000 points it's the repository default.
-    Point* points = (Point*) malloc(NUMBER_OF_POINTS * sizeof(Point));
+    Point* points = (Point*) malloc(1000000 * sizeof(Point));
     Centroid* centroids = (Centroid*) malloc(NUMBER_OF_CENTROIDS * sizeof(Centroid));
 
     json = json_load_file("../points.json", 0, &error);
