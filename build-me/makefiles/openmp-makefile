@@ -1,0 +1,43 @@
+#
+# build the openmp project.
+#
+# usage:
+#   normal build:
+#   $make
+#
+#   clean project:
+#   $make clean
+#   
+# @author tmaltempi@gmail.com
+# @since 18/06/2015
+#
+
+all: make-all
+GCC=gcc
+GPP=g++
+make-all: clean kmeans.o main.o point.o kmeans
+
+kmeans.o: src/kmeans.c
+	$(GCC) -Wall -O3 -c ./src/kmeans.c -o ./build/kmeans.o -fopenmp
+
+main.o: src/main.c
+	gcc -Wall -O3 -c ./src/main.c -o ./build/main.o -fopenmp
+
+point.o: src/point.c
+	$(GCC) -Wall -O3 -c ./src/point.c -o ./build/point.o -fopenmp
+
+kmeans:
+	$(GPP) -o kmeans.out ./build/kmeans.o ./build/main.o ./build/point.o -s -ljansson -fopenmp
+
+run:
+	# running arq1.json with 10000 points and 10 centroids
+	./kmeans.out ../input/arq1.json   10000 10 >> ../output.dat
+	# running arq2.json with 100000 points and 10 centroids
+	./kmeans.out ../input/arq2.json  100000 10 >> ../output.dat
+	# runnint arq3.json with 1000000 points and 10 centroids
+	./kmeans.out ../input/arq3.json 1000000 10 >> ../output.dat
+
+clean:
+	#create a backup of actual kmeans.out if exists
+	/bin/sh -c 'if [ ! -d "build" ]; then mkdir build; fi'
+	rm -rf ./build/*
