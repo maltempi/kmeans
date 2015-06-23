@@ -10,6 +10,10 @@ Este código está disponível em github.com.br/maltempi/kmeans. E futuramente s
 
 -----
 
+Observacao. A implementação de OpenMP possui o paralelismo da função que é o maior hotspot da aplicação: group_by_cluster. O objetivo de fazer a implementação em OpenMP foi mostrar a eficiência da programação paralela em GPU com a eficiência da programação paralela em CPU. Porém, o foco deste trabalho é a paralelização do algoritmo de K-means com a plataforma CUDA.
+
+-----
+
 Requisitos mínimos para compilação e execução:
 
  -> Cuda 7.0

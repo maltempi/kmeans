@@ -16,19 +16,49 @@
 int NUMBER_OF_POINTS = 100000;
 int NUMBER_OF_CENTROIDS = 10;
 
-void print_me(Centroid* centroids) {
+void print_initial_considerations(char* filename) {
+    // initialize execution with a blank line
+    printf("\n");
+
+    printf("-> Implementação do K-means em CUDA.\n");
+
+    if (REPOSITORY_SPECIFICATION == 1) {
+        printf("-> Rodando 15 iterações de kmeans, por 100 vezes.\n");
+    }
+
+    printf("-> Arquivo de pontos a ser executado: %s \n", filename);
+    printf("-> Número de pontos: %i, Número de centroids %i\n", NUMBER_OF_POINTS, NUMBER_OF_CENTROIDS);
+    
+}
+
+void print_initial_centroids(Centroid* centroids) {
 
     if (!DEBUG_LOGS) {
         return;
     }
 
+    printf("--> Centroids iniciais: \n");
     for (int i = 0; i < NUMBER_OF_CENTROIDS; i++) {
-        printf("[x=%lf, y=%lf, x_sum=%lf, y_sum=%lf, num_points=%i]\n", 
+        printf("--->[x=%lf, y=%lf]\n", centroids[i].x, centroids[i].y);
+    }
+
+    printf("\n");
+}
+
+void print_final_centroids(Centroid* centroids) {
+
+    if (!DEBUG_LOGS) {
+        return;
+    }
+
+    printf("--> Resultado: \n");
+    for (int i = 0; i < NUMBER_OF_CENTROIDS; i++) {
+        printf("---> [x=%lf, y=%lf, x_sum=%lf, y_sum=%lf, num_points=%i]\n", 
                centroids[i].x, centroids[i].y, centroids[i].x_sum,
                centroids[i].y_sum, centroids[i].num_points);
     }
 
-    printf("--------------------------------------------------\n");
+    printf("\n");
 }
 
 long int run_kmeans_repo_specifications(Point* points, Centroid* centroids) {
@@ -41,15 +71,13 @@ long int run_kmeans_repo_specifications(Point* points, Centroid* centroids) {
         centroids[ci].y = points[ci].y;
     }
 
-    print_me(centroids);
+    print_initial_centroids(centroids);
 
     for (int i = 0; i < TIMES; i++) {
 
         km_execute(points, centroids, NUMBER_OF_POINTS, NUMBER_OF_CENTROIDS);
 
-        if (i + 1 == TIMES) {
-            print_me(centroids);
-        } else {
+        if (i + 1 < TIMES) {
             // load the centroids to next iteration
             for (int ci = 0; ci < NUMBER_OF_CENTROIDS; ci++) {
                 centroids[ci].x = points[ci].x;
@@ -58,11 +86,13 @@ long int run_kmeans_repo_specifications(Point* points, Centroid* centroids) {
         }
     }
 
+    print_final_centroids(centroids);
+
     gettimeofday(&time_after, NULL);
     timersub(&time_after, &time_before, &time_result);
     long int ms = ((long int)time_result.tv_sec*1000) + ((long int)time_result.tv_usec/1000);
 
-    return ms / TIMES;
+    return ms;
 }
 
 long int run_kmeans_rocks(Point* points, Centroid* centroids) {
@@ -72,7 +102,7 @@ long int run_kmeans_rocks(Point* points, Centroid* centroids) {
         centroids[i].y = points[i].y;
     }
 
-    print_me(centroids);
+    print_initial_centroids(centroids);
 
     struct timeval time_before, time_after, time_result;
     gettimeofday(&time_before, NULL);
@@ -83,7 +113,7 @@ long int run_kmeans_rocks(Point* points, Centroid* centroids) {
     timersub(&time_after, &time_before, &time_result);
     long int ms = ((long int)time_result.tv_sec*1000) + ((long int)time_result.tv_usec/1000);
 
-    print_me(centroids);
+    print_final_centroids(centroids);
 
     return ms; 
 }
@@ -105,9 +135,11 @@ int main(int argc, char *argv[])
         json = json_load_file(argv[1], 0, &error);
         NUMBER_OF_POINTS = atoi(argv[2]);
         NUMBER_OF_CENTROIDS = atoi(argv[3]);
+        print_initial_considerations(argv[1]);
     }
     else {
         json = json_load_file("../points.json", 0, &error);
+        print_initial_considerations("../points.json");
     }
 
     cudaSetDevice(0);
@@ -142,7 +174,9 @@ int main(int argc, char *argv[])
     free(centroids);
     free(points);
 
-    printf("Average Time: %li ms\n", total_time);
+    printf("-> Tempo total desta execução: %li ms\n", total_time);
+
+    printf("===========================================================\n");
 
     cudaDeviceReset();
 

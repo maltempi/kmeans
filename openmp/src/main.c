@@ -15,6 +15,54 @@ int NUMBER_OF_POINTS = 100000;
 int NUMBER_OF_CENTROIDS = 10;
 int NUM_THREAD = 4;
 
+void print_initial_considerations(char* filename) {
+    // initialize execution with a blank line
+    printf("\n");
+
+    printf("-> Implementação do K-means em OPENMP (apenas a função de agrupar points).\n");
+
+    if (REPOSITORY_SPECIFICATION == 1) {
+        printf("-> Rodando 15 iterações de kmeans, por 100 vezes.\n");
+    }
+
+    printf("-> Arquivo de pontos a ser executado: %s \n", filename);
+    printf("-> Número de pontos: %i, Número de centroids: %i, Número de threads: %i \n", NUMBER_OF_POINTS, NUMBER_OF_CENTROIDS, NUM_THREAD);
+    
+}
+
+void print_initial_centroids(Centroid* centroids) {
+
+    if (!DEBUG_LOGS) {
+        return;
+    }
+
+    int i;
+
+    printf("--> Centroids iniciais: \n");
+    for (i = 0; i < NUMBER_OF_CENTROIDS; i++) {
+        printf("--->[x=%lf, y=%lf]\n", centroids[i].x, centroids[i].y);
+    }
+
+    printf("\n");
+}
+
+void print_final_centroids(Centroid* centroids) {
+
+    if (!DEBUG_LOGS) {
+        return;
+    }
+
+    int i;
+    printf("--> Resultado: \n");
+    for (i = 0; i < NUMBER_OF_CENTROIDS; i++) {
+        printf("---> [x=%lf, y=%lf, x_sum=%lf, y_sum=%lf, num_points=%i]\n", 
+               centroids[i].x, centroids[i].y, centroids[i].x_sum,
+               centroids[i].y_sum, centroids[i].num_points);
+    }
+
+    printf("\n");
+}
+
 void print_me(Centroid* centroids)
 {
 
@@ -50,15 +98,13 @@ long int run_kmeans(Point* points, Centroid* centroids)
         centroids[ci].num_points = 0;
     }
 
-    print_me(centroids);
+    print_initial_centroids(centroids);
 
     for (i = 0; i < TIMES; i++) {
 
         km_execute(points, centroids);
 
-        if (i + 1 == TIMES) {
-            print_me(centroids);
-        } else {
+        if (i + 1 < TIMES) {
             // load the centroids to next iteration
             for (ci = 0; ci < NUMBER_OF_CENTROIDS; ci++) {
                 centroids[ci].x = points[ci].x;
@@ -67,12 +113,14 @@ long int run_kmeans(Point* points, Centroid* centroids)
         }
     }
 
+    print_final_centroids(centroids);    
+
     gettimeofday(&time_after, NULL);
     timersub(&time_after, &time_before, &time_result);
     long int ms = ((long int) time_result.tv_sec * 1000)
             + ((long int) time_result.tv_usec / 1000);
 
-    return ms / TIMES;
+    return ms;
 }
 
 int main(int argc, char *argv[])
@@ -92,18 +140,19 @@ int main(int argc, char *argv[])
     if (argc == 2) {
         NUM_THREAD = atoi(argv[1]);
         json = json_load_file("../points.json", 0, &error);
+        print_initial_considerations("../points.json");
     }
     else if (argc == 5) {
         json = json_load_file(argv[1], 0, &error);
         NUMBER_OF_POINTS = atoi(argv[2]);
         NUMBER_OF_CENTROIDS = atoi(argv[3]);
         NUM_THREAD = atoi(argv[4]);
+        print_initial_considerations(argv[1]);
     }
     else {
         json = json_load_file("../points.json", 0, &error);
+        print_initial_considerations("../points.json");
     }
-
-    // printf("NUM_THREAD: %i | NUM_OF_POINTS: %i | NUM_OF_CENTROIDS: %i | FILENAME %s\n", NUM_THREAD, NUMBER_OF_POINTS, NUMBER_OF_CENTROIDS, argv[1]);
 
     Point* points = (Point*) malloc(NUMBER_OF_POINTS * sizeof(Point));
     Centroid* centroids = (Centroid*) malloc(
@@ -132,7 +181,9 @@ int main(int argc, char *argv[])
     free(centroids);
     free(points);
 
-    printf("Average Time: %li ms\n", total_time);
+    printf("-> Tempo total desta execução: %li ms\n", total_time);
+
+    printf("===========================================================\n");
 
     return 0;
 }
