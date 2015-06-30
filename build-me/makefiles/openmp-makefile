@@ -30,11 +30,17 @@ kmeans:
 	$(GPP) -o kmeans.out ./build/kmeans.o ./build/main.o ./build/point.o -s -ljansson -fopenmp
 
 run:
-	# running arq1.json with 10000 points and 10 centroids
+	# running arq1.json with 10000 points and 10 centroids and 1 thread
+	./kmeans.out ../input/arq1.json 10000 10 1 >> ../output.dat
+	# running arq2.json with 100000 points and 10 centroids  and 1 thread
+	./kmeans.out ../input/arq2.json 100000 10 1 >> ../output.dat
+	# running arq3.json with 1000000 points and 10 centroids  and 1 thread
+	./kmeans.out ../input/arq3.json 1000000 10 1 >> ../output.dat
+	# running arq1.json with 10000 points and 10 centroids  and 4 threads
 	./kmeans.out ../input/arq1.json 10000 10 4 >> ../output.dat
-	# running arq2.json with 100000 points and 10 centroids
+	# running arq2.json with 100000 points and 10 centroids and 4 threads
 	./kmeans.out ../input/arq2.json 100000 10 4 >> ../output.dat
-	# running arq3.json with 1000000 points and 10 centroids
+	# running arq3.json with 1000000 points and 10 centroids and 4 threads
 	./kmeans.out ../input/arq3.json 1000000 10 4 >> ../output.dat
 
 clean:

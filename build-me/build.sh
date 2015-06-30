@@ -32,7 +32,9 @@ echo "coping input files to build folder"
 cp -r input/ $FOLDER_NAME/
 
 echo "copiando arquivo pdf"
-cp $FOLDER_NAME-documento.pdf $FOLDER_NAME
+cp $FOLDER_NAME-relatorio.pdf $FOLDER_NAME
+cp $FOLDER_NAME-apresentacao.pdf $FOLDER_NAME
+cp $FOLDER_NAME-apresentacao.pptx $FOLDER_NAME
 
 echo "cleaning trashes fles"
 rm $FOLDER_NAME/cuda/kmeans.out*
