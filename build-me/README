@@ -1,16 +1,30 @@
-Implementação da paralelização do algoritmo K-means em CUDA e OPENMP.
+Implementação da paralelização do algoritmo K-means em CUDA, Sequencial e uma implementação de um hotspot em OPENMP.
 
 Esta implementação foi feita para o projeto final da disciplina MO644 da pós graduação do instituto de computação da Universidade Estadual de Campinas (Unicamp).
 
 Autores:
-	Alex S. Torres - alexst07@gmail.com - RA. 61939
+	Alex S. Torres - alexst07@gmail.com - RA. 161939
 	Thiago J. M. Maltempi - tmmaltempi@gmail.com - R.A. 180070
 
-Este código está disponível em github.com.br/maltempi/kmeans. E futuramente servirá como contribuição de duas implementações (cuda e openmp) para um repositório que possui implementações do K-means em várias linguagens de programação. (github.com/andreaferretti/kmeans)
+Este código está disponível em github.com.br/maltempi/kmeans. E futuramente servirá como contribuição de duas implementações (cuda e openmp) para um repositório que possui implementações do K-means em várias linguagens de programação. (github.com/andreaferretti/kmeans).
 
 -----
 
-Observacao. A implementação de OpenMP possui o paralelismo da função que é o maior hotspot da aplicação: group_by_cluster. O objetivo de fazer a implementação em OpenMP foi mostrar a eficiência da programação paralela em GPU com a eficiência da programação paralela em CPU. Porém, o foco deste trabalho é a paralelização do algoritmo de K-means com a plataforma CUDA.
+Observação importante: As especificações deste trabalho demandaram algumas mudanças na forma de output do programa, então foi criado uma branch temporária para colocar as modificações das especificações deste trabalho. A branch é mo644_specifications
+
+-----
+
+Observação importante2: Os resultados das execuções deste algoritmo são dados em milisegundos, referentes a 100 execuções de 15 iterações do kmeans. Tendo estas 100 execuções, é possível fazer a média do tempo gasto em 15 iterações. Logo, pegar o tempo dado na exeução do programa e dividir por 100.
+
+-----
+
+Observação importante3: Por uma limitação de 5MB no SUSY, foi colocado apenas o arquivo de input de 100.000 points. Os arquivos com 10.000 e de 1.000.000 podem ser baixados no repositório do github (github.com/maltempi/kmeans/${branch mo644_specificacions}/build-me/input). Ou ser gerado através do arquivo input/generate_files.py, basta colocar o número de pontos que você quer que gere no código, e executar:
+
+python generate_files.py > novo_arquivo.json
+
+-----
+
+Observacao importante 4. A implementação de OpenMP possui o paralelismo da função que é o maior hotspot da aplicação: group_by_cluster. O objetivo de fazer a implementação em OpenMP foi mostrar a eficiência da programação paralela em GPU com a eficiência da programação paralela em CPU. Porém, o foco deste trabalho é a paralelização do algoritmo de K-means com a plataforma CUDA.
 
 -----
 
@@ -31,44 +45,28 @@ Estrutura do diretório:
 ----kmeans.out ---------------> executable implementation - created on make execution
 --openmp/ --------------------> openmp implementation
 ----src/ ---------------------> openmp implementation
-------{source-files} ---------> soruce files...
+------{source-files} ---------> source files...
 ----makefile -----------------> makefile
 ----build/ -------------------> created on make execution
 ----kmeans.out ---------------> executable implmentation - created on make execution;
 --input/----------------------> input files
-----arq1.json ----------------> file with    10,000 points
-----arq2.json ----------------> file with   100,000 points
-----arq3.json ----------------> file with 1,000,000 points
---output.dat -----------------> algorithm results
-
------
-
-Arquivos de entrada
-
-Há três arquivos de entrada disponíveis na pasta $ra61939-ra180070/input chamados arq1.json, arq2.json e arq3.json, que possuem 10000, 100000 e 1000000 pontos de entrada consecutivamente.
-Estes arquivos possuem a estrutura de json, sendo uma lista com N sublistas, sendo cada sublista um ponto composto por x e y, sendo x e y floats.
-
-Exemplo da estrutura do json:
-	[ [123.00, 234.00], [345.00, 456.00], ... ]
-
------
+----points.json --------------> input with 100.000 points
+--output.dat -----------------> resultado do algoritmo
+--ra161939-ra180070-apresentacao.pdf -> apresentacao em pdf
+--ra161939-ra180070-relatorio.pdf -> relatório em pdf
 
 Arquivos de saída
 
 Na raiz do diretório existe um arquivo chamado output.dat, que é o arquivo de saida.
 A cada execução é adicionado a este arquivo a seguinte estrutura:
 
-{ ARQUIVO_EXECUTADO }
-----------------------
-{ DATA_DE_EXECUCAO }
-{ ARQUIVO_EXECUTADO }
+-> Cabeçalho (tecnologias utilizadas e informações sobre a execução)
+-> Centróids iniciais
 
-Resultado:
-{ [x, y] - [numero de points associados ao grupo] }
+-> Resultado (print do array de grupos)
 
-Speedup: xx 
+-> tempo de execução (em ms) referentes à 100 execuções de 15 iterações do kmeans
 
----------------------------------------------------
 
 -----
 
@@ -87,7 +85,14 @@ Execução:
 CUDA
 	$/ra61939-ra180070/cuda/kmeans.out [ path-arquivo-entrada ] [ qtde_points ] [ qtde_centroids ]
 
-OpenMP
-	$/ra61939-ra180070/cuda/kmeans.out [ path-arquivo-entrada ] [ qtde_points ] [ qtde_centroids ]
+	ou
 
+	$/ra61939-ra180070/cuda/ make run # executa 100.000 points com 10 centróids
+
+OpenMP
+	$/ra61939-ra180070/openmp/kmeans.out [ path-arquivo-entrada ] [ qtde_points ] [ qtde_centroids ] [ num_threads]
+
+	ou
+
+	$/ra61939-ra180070/openmp/ make run # executa 100.000 points com 10 centróids
 -----

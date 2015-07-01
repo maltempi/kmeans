@@ -23,18 +23,20 @@ echo "coping custom makefile to cuda folder"
 cp makefiles/cuda-makefile $FOLDER_NAME/cuda/makefile
 
 echo "coping openmp implementation"
-cp -R ../openmp $FOLDER_NAME/
+cp -r ../openmp $FOLDER_NAME/
 
 echo "coping custom makefile to openmp folder"
 cp makefiles/openmp-makefile $FOLDER_NAME/openmp/makefile
 
 echo "coping input files to build folder"
-cp -r input/ $FOLDER_NAME/
+#cp -r input/ $FOLDER_NAME/
+mkdir $FOLDER_NAME/input
+cp input/points.json $FOLDER_NAME/input/
+cp generate_files.py $FOLDER_NAME/input/
 
 echo "copiando arquivo pdf"
-cp $FOLDER_NAME-relatorio.pdf $FOLDER_NAME
-cp $FOLDER_NAME-apresentacao.pdf $FOLDER_NAME
-cp $FOLDER_NAME-apresentacao.pptx $FOLDER_NAME
+cp relatorio.pdf $FOLDER_NAME
+cp apresentacao.pdf $FOLDER_NAME
 
 echo "cleaning trashes fles"
 rm $FOLDER_NAME/cuda/kmeans.out*
@@ -44,6 +46,8 @@ rm -rf $FOLDER_NAME/cuda/build/
 rm $FOLDER_NAME/openmp/kmeans.out*
 rm -rf $FOLDER_NAME/openmp/build/
 rm $FOLDER_NAME/openmp/compile.sh
+rm $FOLDER_NAME/cuda/src/.cproject
+rm $FOLDER_NAME/cuda/src/.project
 
 echo "compacting"
 tar -cf $TAR_GZ_NAME $FOLDER_NAME
