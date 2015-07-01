@@ -4,11 +4,11 @@ echo " NÃO ESQUEÇA DE COLOCAR O artigo em PDF arqui nessa pasta, hen? :-)"
 echo "-----------------------------------------------------------------"
 
 FOLDER_NAME="ra161939-ra180070"
-TAR_GZ_NAME="ra161939-ra180070.tar.gz"
+ZIP_NAME="trabalho_final.zip"
 
 echo "cleaning last build"
 rm -rf $FOLDER_NAME
-rm $TAR_GZ_NAME
+rm $ZIP_NAME
 
 echo "creating the build folder"
 mkdir $FOLDER_NAME
@@ -50,6 +50,6 @@ rm $FOLDER_NAME/cuda/src/.cproject
 rm $FOLDER_NAME/cuda/src/.project
 
 echo "compacting"
-tar -cf $TAR_GZ_NAME $FOLDER_NAME
+zip -r $ZIP_NAME $FOLDER_NAME
 
 echo "end of build"
